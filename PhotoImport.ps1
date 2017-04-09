@@ -3,7 +3,7 @@
 #Import-PSSession $Session
 
 #Force Stop action on failure, Used for the TRY section, will add Email notification at later date
-$ErrorActionPreference = ìStopî
+$ErrorActionPreference = ‚ÄúStop‚Äù
 $Global:failedUser = ""
 
 #Generate datestamp for completed imports
@@ -18,22 +18,22 @@ Function Shrink-Ray {
             $BMPFile = $photofile.fullname +".bmp"
 
             #Load required assemblies and get object reference 
-            [Reflection.Assembly]::LoadWithPartialName(ìSystem.Windows.Formsî)
+            [Reflection.Assembly]::LoadWithPartialName(‚ÄúSystem.Windows.Forms‚Äù)
         
             $i = new-object System.Drawing.Bitmap($JPGFile)
             #Display image properties including height and width 
             # $i; 
             #Save with the image in the desired format 
-            $i.Save($BMPFile,ìbmpî)
+            $i.Save($BMPFile,‚Äúbmp‚Äù)
             $I.Dispose()
             $i = $null
 
             move-item $PhotoFile.FullName C:\temp\photo\done\$($Photofile.name)
 
             $o = new-object System.Drawing.Bitmap($BMPFile)
-            $o.Save($JPGFile,ìjpegî)
+            $o.Save($JPGFile,‚Äújpeg‚Äù)
             $o.dispose()
-            $o = $null
+            $o = $null 
             rm $BMPFile
         }
     }
@@ -46,7 +46,7 @@ Function Import-photo {
         Catch{
  
            #Check File resolution
-           [Reflection.Assembly]::LoadWithPartialName(ìSystem.Windows.Formsî);
+           [Reflection.Assembly]::LoadWithPartialName(‚ÄúSystem.Windows.Forms‚Äù);
             $PhotoStats = New-Object System.Drawing.Bitmap($PhotoFile.fullname);
             $PW = $photostats.Width
             $PH = $photostats.Height
