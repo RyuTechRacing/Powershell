@@ -57,7 +57,6 @@ Function Restore-Office{
     If (Test-path "C:\Program Files\Microsoft Office\Office15\lync.exe"){& "C:\Program Files\Microsoft Office\Office15\lync.exe"}
     }
 
-
 Kill-Office
 Purge-Files
 Restore-Office
