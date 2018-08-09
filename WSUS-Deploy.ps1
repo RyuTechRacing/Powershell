@@ -18,7 +18,7 @@ HowTo:
      CleanupXML: An Export from a server. (Steps can be found here: https://www.petri.com/export-scheduled-tasks-using-powershell)
 
     Running Code:
-        For Full Automation, Type Install-WSUS-Install
+        For Full Automation, Type Install-WSUS-Service
         For Targeted Deployment use the following:
 
             Install-Wsus-Features - Install Core features and roles - NO Configuration
