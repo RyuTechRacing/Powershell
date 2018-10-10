@@ -1,35 +1,33 @@
 <# Powershell Deployment Configured for WSUS Servers
-.Author: Ryan Thompson
-.Date: 5/21/18
-.Pre-requirements: windows server 2012 R2 with a D drive that has minimum 200GB space
 
-.Notes:
-    Goal - Automate deployment and configuration of WSUS for servers.   This will remove the requirement for a single person to struggle with the deployment
+    .Author: Ryan Thompson
 
-.HowTo:
-     Set Variables to fit your environment:
-     Drive Letter: Install Drive NO Special Characters
-     UpStreamServer: Set FQDN of Upstream Server
-     Port: Change if Not using Genric port
-     SyncTime: When do you want Sync to Trigger first
-     SyncPerDay: How Often to Sync with master
-     ServiceAccount: Account name to run Maintenance Script with
-     CleanupPS1: A generic Ps1 Cleanup script.  (One can be found here: https://gallery.technet.microsoft.com/scriptcenter/WSUS-Maintenance-w-logging-d507a15a)
-     CleanupXML: An Export from a server. (Steps can be found here: https://www.petri.com/export-scheduled-tasks-using-powershell)
-
-.Running Code:
-        For Full Automation, Type Install-WSUS-Service
-        For Targeted Deployment use the following:
-
-            Install-Wsus-Features - Install Core features and roles - NO Configuration
-            Config-Downstream     - Defines settings for Downstream server, Starts Initial Syncronization to Upstream Server defined
-            Config-Install        - Set WSUS folder, Copy Maintenance Scripts, Start Postinstall tasks
-            Config-Maintenance    - Configures Scheduled Task for maintenance NOTE: Code will prompt for Password
-
-.Prerequisites:
-        a Copy of AdamJ's wsus Cleanup Script: https://www.ajtek.ca/
+    .Pre-requirements: 
+        Windows server 2012 R2 with a D drive that has minimum 200GB space
+        Copy of AdamJ's wsus Cleanup Script: https://www.ajtek.ca/
         All Pre-reqs for Adams Script are required. 
 
+    .Notes:
+        Goal - Automate deployment and configuration of WSUS downstream servers.  
+
+    .HowTo:
+         Set Variables to fit your environment:
+         Drive Letter: Install Drive NO Special Characters
+         UpStreamServer: Set FQDN of Upstream Server
+         Port: Change if Not using Genric port
+         SyncTime: When do you want Sync to Trigger first
+         SyncPerDay: How Often to Sync with master
+         ServiceAccount: Account name to run Maintenance Script with
+         CleanupPS1: A generic Ps1 Cleanup script.  (One can be found here: https://gallery.technet.microsoft.com/scriptcenter/WSUS-Maintenance-w-logging-d507a15a)
+         CleanupXML: An Export from a server. (Steps can be found here: https://www.petri.com/export-scheduled-tasks-using-powershell)
+
+    .Running Code:
+            For Full Automation, Type Install-WSUS-Service
+            For Targeted Deployment use the following:
+                Install-Wsus-Features - Install Core features and roles - NO Configuration
+                Config-Downstream     - Defines settings for Downstream server, Starts Initial Syncronization to Upstream Server defined
+                Config-Install        - Set WSUS folder, Copy Maintenance Scripts, Start Postinstall tasks
+                Config-Maintenance    - Configures Scheduled Task for maintenance NOTE: Code will prompt for Password
 #>
 
 
