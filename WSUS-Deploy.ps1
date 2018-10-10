@@ -1,12 +1,12 @@
 <# Powershell Deployment Configured for WSUS Servers
-Author: Ryan Thompson
-Date: 5/21/18
-Pre-requirements: windows server 2012 R2 with a D drive that has minimum 200GB space
+.Author: Ryan Thompson
+.Date: 5/21/18
+.Pre-requirements: windows server 2012 R2 with a D drive that has minimum 200GB space
 
-Notes:
+.Notes:
     Goal - Automate deployment and configuration of WSUS for servers.   This will remove the requirement for a single person to struggle with the deployment
 
-HowTo:
+.HowTo:
      Set Variables to fit your environment:
      Drive Letter: Install Drive NO Special Characters
      UpStreamServer: Set FQDN of Upstream Server
@@ -17,7 +17,7 @@ HowTo:
      CleanupPS1: A generic Ps1 Cleanup script.  (One can be found here: https://gallery.technet.microsoft.com/scriptcenter/WSUS-Maintenance-w-logging-d507a15a)
      CleanupXML: An Export from a server. (Steps can be found here: https://www.petri.com/export-scheduled-tasks-using-powershell)
 
-    Running Code:
+.Running Code:
         For Full Automation, Type Install-WSUS-Service
         For Targeted Deployment use the following:
 
@@ -26,14 +26,10 @@ HowTo:
             Config-Install        - Set WSUS folder, Copy Maintenance Scripts, Start Postinstall tasks
             Config-Maintenance    - Configures Scheduled Task for maintenance NOTE: Code will prompt for Password
 
+.Prerequisites:
+        a Copy of AdamJ's wsus Cleanup Script: https://www.ajtek.ca/
+        All Pre-reqs for Adams Script are required. 
 
-Change Log:
-    Date - Change List
-    5/22/18 - Added in Install-WSUS-Service Function
-
-ToDo List:
-    Determine if Config-Downstream Supports moving WSUS folder path
-    Continue to define hardcoded variables into global variables
 #>
 
 
@@ -55,6 +51,15 @@ If (!$isadmin) {
     Write-Host "Please launch Powershell as Administrator (right click, Run as admin) `r`n"
     Return #kill script with out closing UI
 }
+
+#Displays new cmdlets used in this code. 
+Write-host -ForegroundColor Yellow -"How to Use:`r`b"
+Write-Host -ForegroundColor DarkYellow "      Install-WSUS-Service" -NoNewline; Write-Host " - Runs in each function below in order for full automated install`r`b"
+Write-Host -ForegroundColor DarkYellow "     Install-Wsus-Features" -NoNewline; Write-Host " - Install Core features and roles - NO Configuration`r`b"
+Write-Host -ForegroundColor DarkYellow "      Configure-Downstream" -NoNewline; Write-Host " - Defines settings for Downstream server, Starts Initial Syncronization to Upstream Server defined`r`b"
+Write-Host -ForegroundColor DarkYellow "         Configure-Install" -NoNewline; Write-Host " - Set WSUS folder, Copy Maintenance Scripts, Start Postinstall tasks`r`b"
+Write-Host -ForegroundColor DarkYellow "     Configure-Maintenance" -NoNewline; Write-Host " - Configures Scheduled Task for maintenance NOTE: Code will prompt for Password`r`b"
+
 
 
 Function Install-WSUS-Service {
@@ -117,26 +122,29 @@ Function Configure-Install {
 
 Function Configure-Maintenance {
     $InstallPath = $DriveLetter + ':\wsus'
+    $installLog = $DriveLetter + ':\log.log'
     Copy-item -path $CleanUpEX1 -Destination "$InstallPath\Scripts\Run First - msodbcsql.msi" -Force
     Copy-item -path $CleanUpEX2 -Destination "$InstallPath\Scripts\Run Second - MsSqlCmdLnUtils.msi" -Force
     Copy-item -path $CleanUpPS1 -Destination "$InstallPath\Scripts\Clean-WSUS.ps1" -Force
 
     $App1Path = "$InstallPath\Scripts\Run First - msodbcsql.msi"
     $App2Path = "$InstallPath\Scripts\Run Second - MsSqlCmdLnUtils.msi"
-    $Arglist1 = @("/i `"$App1Path`"","/qn","/norestart","IACCEPTMSODBCSQLLICENSETERMS=YES")
-    $Arglist2 = @("/i `"$App2Path`"","/qn","/norestart","IACCEPTMSSQLCMDLNUTILSLICENSETERMS=YES","/log C:\temp\Log.log")
+    $Arglist1 = @("/i `"$App1Path`"","/qn","/norestart","IACCEPTMSODBCSQLLICENSETERMS=YES","/log D:\Log.log")
+    $Arglist2 = @("/i `"$App2Path`"","/qn","/norestart","IACCEPTMSSQLCMDLNUTILSLICENSETERMS=YES","/log D:\Log.log")
 
     Write-host "Installing MSODBCSQL.msi"
     Start-Process "msiexec.exe" -ArgumentList $arglist1 -Wait -NoNewWindow
     start-sleep -seconds 5
+    Get-Content -Tail 10 $installLog
+    Remove-Item $DriveLetter + ':\Log.log' #clean up
 
     Write-host "Installing MsSqlCmdLnUtils.msi"
     Start-Process "msiexec.exe" -ArgumentList $arglist2 -Wait -NoNewWindow
-    if (!(test-path -path "C:\tmp" -pathtype container)) {New-Item -ItemType directory -Path "C:\tmp" -force}
-    $installLog = "c:\tmp\log.log"
     Get-Content -Tail 10 $installLog
+    Remove-Item $DriveLetter + ':\Log.log' #clean up
 
 
     $env:Path += ";C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\110\Tools\Binn\"
     $MaintenancePath = "$installPath\Scripts\Clean-Wsus.ps1"
     Invoke-Expression "& `"$MaintenancePath`" -Firstrun"
+}
